@@ -1,9 +1,11 @@
 import Image from 'next/image'
 import { CiSearch } from 'react-icons/ci'
+import { AiFillHome } from 'react-icons/ai'
+import { AiOutlinePlusCircle } from 'react-icons/ai'
 
 export default function Header() {
   return (
-    <div className='flex items-center justify-between max-w-6xl'>
+    <div className='flex items-center justify-between max-w-6xl mx-4 xl:mx-auto'>
         { /* Logo */ }
 
         <div className=''>
@@ -35,7 +37,13 @@ export default function Header() {
 
 
         { /* Nav-items */ }
-        <h1>Toyosi</h1>
+        <div className=''> 
+            <div className='flex space-x-4 items-center'>
+                <AiFillHome className='hidden md:inline-flex text-xl cursor-pointer hover:scale-125 transition-transform duration-200 ease-out' />
+                <AiOutlinePlusCircle className='text-xl cursor-pointer hover:scale-125 transition-transform duration-200 ease-out' />
+                <Image src='https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*' width={40} height={10} className='rounded-full cursor-pointer' alt='User image' />
+            </div>
+        </div>
     </div>
   )
 }
