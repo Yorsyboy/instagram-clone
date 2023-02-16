@@ -28,23 +28,28 @@ export default function Post({ id, username, userImg, img, caption }) {
       {/* Post buttons */}
       <div className="flex justify-between px-4 pt-4">
         <div className="flex space-x-4">
-          <AiOutlineHeart className="btn"  />
+          <AiOutlineHeart className="btn" />
           <FaRegComment className="btn" />
         </div>
-          <BsBookmark className="btn" />
+        <BsBookmark className="btn" />
       </div>
 
-        {/* Post caption */}
-        <p className="p-5 truncate"><span className="font-bold mr-1">{username}</span>{caption}</p>
+      {/* Post caption */}
+      <p className="p-5 truncate">
+        <span className="font-bold mr-1">{username}</span>
+        {caption}
+      </p>
 
-        {/* Post comments Input */}
-        <form className="flex items-center p-4">
+      {/* Post comments Input */}
+      <form className="flex items-center p-4">
         <HiOutlineEmojiHappy className="" />
-        <input className="border-none flex-1 focus:ring-0" type="text" placeholder="Enter your comment" />
+        <input
+          className="border-none flex-1 focus:ring-0"
+          type="text"
+          placeholder="Enter your comment"
+        />
         <button className="text-blue-400 font-bold ">Post</button>
-        </form>
-        
-
+      </form>
     </div>
   );
 }
