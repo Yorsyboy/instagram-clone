@@ -13,7 +13,6 @@ export default function  () {
             id: i,
         }));
         setStoryUser(storyUsers);
-        console.log(storyUsers)
     }, []);
 
   return (
