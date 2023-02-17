@@ -4,8 +4,10 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { BsBookmark } from "react-icons/bs";
 import { FaRegComment } from "react-icons/fa";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
+import { useSession } from "next-auth/react";
 
 export default function Post({ id, username, userImg, img, caption }) {
+  const { data: session } = useSession();
   return (
     <div
       className="bg-white my-7 border-1 rounded-md
@@ -26,13 +28,15 @@ export default function Post({ id, username, userImg, img, caption }) {
       <img className="w-full object-cover" src={img} alt="Post Image" />
 
       {/* Post buttons */}
-      <div className="flex justify-between px-4 pt-4">
-        <div className="flex space-x-4">
-          <AiOutlineHeart className="btn" />
-          <FaRegComment className="btn" />
+      {session && (
+        <div className="flex justify-between px-4 pt-4">
+          <div className="flex space-x-4">
+            <AiOutlineHeart className="btn" />
+            <FaRegComment className="btn" />
+          </div>
+          <BsBookmark className="btn" />
         </div>
-        <BsBookmark className="btn" />
-      </div>
+      )}
 
       {/* Post caption */}
       <p className="p-5 truncate">
@@ -41,15 +45,17 @@ export default function Post({ id, username, userImg, img, caption }) {
       </p>
 
       {/* Post comments Input */}
-      <form className="flex items-center p-4">
-        <HiOutlineEmojiHappy className="" />
-        <input
-          className="border-none flex-1 focus:ring-0"
-          type="text"
-          placeholder="Enter your comment"
-        />
-        <button className="text-blue-400 font-bold ">Post</button>
-      </form>
+      {session && (
+        <form className="flex items-center p-4">
+          <HiOutlineEmojiHappy className="" />
+          <input
+            className="border-none flex-1 focus:ring-0"
+            type="text"
+            placeholder="Enter your comment"
+          />
+          <button className="text-blue-400 font-bold ">Post</button>
+        </form>
+      )}
     </div>
   );
 }
