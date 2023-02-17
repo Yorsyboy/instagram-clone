@@ -33,7 +33,7 @@ export default function signin({ providers }) {
             {Object.values(providers).map((provider) => (
               <div key={provider.name} className="">
                 <button
-                  className="bg-red-400 rounded-lg p-3 text-white hover:bg-red-500 m-1"
+                  className="bg-black inline-block m-1 px-6 py-2.5 mb-2 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out"
                   onClick={() => signIn(provider.id, { callbackUrl: "/" })}
                 >
                   Sign in with {provider.name}
