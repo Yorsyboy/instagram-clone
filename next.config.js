@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['upload.wikimedia.org', 'cdn-icons-png.flaticon.com', 'hips.hearstapps.com']
+    domains: ['upload.wikimedia.org', 'cdn-icons-png.flaticon.com', 'hips.hearstapps.com', 'avatars.githubusercontent.com', 'lh3.googleusercontent.com']
   }
 }
 
