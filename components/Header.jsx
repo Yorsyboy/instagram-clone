@@ -15,6 +15,7 @@ export default function Header() {
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1024px-Instagram_logo.svg.png"
               layout="fill"
               className="object-contain"
+              alt="Instagram logo"
             />
           </div>
           <div className="cursor-pointer h-24 w-10 relative lg:hidden">
@@ -22,6 +23,7 @@ export default function Header() {
               src="https://cdn-icons-png.flaticon.com/512/87/87390.png"
               layout="fill"
               className="object-contain"
+              alt="Instagram logo"
             />
           </div>
         </div>
