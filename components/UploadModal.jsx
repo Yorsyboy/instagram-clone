@@ -3,10 +3,22 @@ import { modalState } from "../atom/modalAtom";
 import { useRecoilState } from "recoil";
 import Modal from "react-modal";
 import { AiOutlineCamera } from "react-icons/ai";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { db, storage } from "../firebase";
+import { useSession } from "next-auth/react";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 
 export default function UploadModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
 
   //function to read the image
   const addImageToPost = (e) => {
@@ -19,6 +31,33 @@ export default function UploadModal() {
     };
   };
   const filerPickerRef = useRef(null);
+  const captionRef = useRef(null);
+
+  const uploadPost = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    const docRef = await addDoc(collection(db, "posts"), {
+      caption: captionRef.current.value,
+      username: session.user.username,
+      profilePic: session.user.image,
+      timestamp: serverTimestamp(),
+    });
+
+    const imageRef = ref(storage, `posts/${docRef.id}/image`);
+    await uploadString(imageRef, selectedImage, "data_url").then(
+      async (snapshot) => {
+        const downloadURL = await getDownloadURL(imageRef);
+        await updateDoc(doc(db, "posts", docRef.id), {
+          image: downloadURL,
+        });
+      }
+    );
+    setOpen(false);
+    setLoading(false);
+    setSelectedImage(null);
+  };
+
   return (
     <div>
       {open && (
@@ -56,9 +95,11 @@ export default function UploadModal() {
               maxLength={150}
               placeholder="Enter Caption"
               className="m-4 border-none text-center w-full focus:ring-0 "
+              ref={captionRef}
             />
             <button
-              disabled
+              disabled={!selectedImage || loading}
+              onClick={uploadPost}
               className="w-full bg-red-600 text-white p-2 shadow-md hover:brightness-125 disabled:bg-gray-200 disabled:cursor-not-allowed disabled:hover:brightness-100"
             >
               Upload Post
