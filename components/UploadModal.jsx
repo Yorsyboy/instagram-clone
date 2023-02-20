@@ -86,7 +86,7 @@ export default function UploadModal() {
             <input
               onChange={addImageToPost}
               type="file"
-              accept="image/*"
+              accept="image/*, video/*"
               hidden
               ref={filerPickerRef}
             />
