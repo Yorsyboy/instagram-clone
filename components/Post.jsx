@@ -53,15 +53,14 @@ export default function Post({ id, username, userImg, img, caption }) {
 
   const likePost = async () => {
     // add the like to the database
-    if(hasLiked) {
+    if (hasLiked) {
       await deleteDoc(doc(db, "posts", id, "likes", session.user.username));
       return;
     } else {
+      await setDoc(doc(db, "posts", id, "likes", session.user.username), {
+        username: session.user.username,
+      });
     }
-    await setDoc(doc(db, "posts", id, "likes", session.user.username), {
-      username: session.user.username,
-    });
-      
   };
 
   useEffect(() => {
@@ -117,13 +116,19 @@ export default function Post({ id, username, userImg, img, caption }) {
 
       {/* Post caption */}
       <p className="p-5 truncate">
+        {likes.length > 0 && (
+          <p className="font-bold mb-1">{likes.length} likes</p>
+        )}
         <span className="font-bold mr-1">{username}</span>
         {caption}
       </p>
       {comments.length > 0 && (
         <div className="mx-10 max-h-24 overflow-y-scroll scrollbar-none">
           {comments.map((comment) => (
-            <div key={comment.data().username} className="flex items-center space-x-2 mb-2">
+            <div
+              key={comment.data().username}
+              className="flex items-center space-x-2 mb-2"
+            >
               <img
                 className="h-7 rounded-full object-cover"
                 src={comment.data().userImage}
