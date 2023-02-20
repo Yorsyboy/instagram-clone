@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { BsBookmark } from "react-icons/bs";
 import { FaRegComment } from "react-icons/fa";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
-import Moment from 'react-moment';
+import Moment from "react-moment";
 import { useSession } from "next-auth/react";
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -20,6 +23,8 @@ export default function Post({ id, username, userImg, img, caption }) {
   const { data: session } = useSession();
   const [comment, setComment] = useState(" ");
   const [comments, setComments] = useState([]);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [likes, setLikes] = useState([]);
 
   useEffect(() => {
     // fetch the comments from the database
@@ -45,6 +50,37 @@ export default function Post({ id, username, userImg, img, caption }) {
       timestamp: serverTimestamp(),
     });
   };
+
+  const likePost = async () => {
+    // add the like to the database
+    if(hasLiked) {
+      await deleteDoc(doc(db, "posts", id, "likes", session.user.username));
+      return;
+    } else {
+    }
+    await setDoc(doc(db, "posts", id, "likes", session.user.username), {
+      username: session.user.username,
+    });
+      
+  };
+
+  useEffect(() => {
+    // fetch the likes from the database
+    const unsubscribe = onSnapshot(
+      collection(db, "posts", id, "likes"),
+      (snapshot) => setLikes(snapshot.docs)
+    );
+
+    return unsubscribe;
+  }, [db]);
+
+  useEffect(() => {
+    setHasLiked(
+      // check if the user has liked the post
+      likes.findIndex((like) => like.id === session?.user?.username) !== -1
+    );
+  }, [likes]);
+
   return (
     <div
       className="bg-white my-7 border-1 rounded-md
@@ -68,7 +104,11 @@ export default function Post({ id, username, userImg, img, caption }) {
       {session && (
         <div className="flex justify-between px-4 pt-4">
           <div className="flex space-x-4">
-            <AiOutlineHeart className="btn" />
+            {hasLiked ? (
+              <AiFillHeart onClick={likePost} className="text-red-600 btn" />
+            ) : (
+              <AiOutlineHeart onClick={likePost} className="btn" />
+            )}
             <FaRegComment className="btn" />
           </div>
           <BsBookmark className="btn" />
@@ -83,8 +123,12 @@ export default function Post({ id, username, userImg, img, caption }) {
       {comments.length > 0 && (
         <div className="mx-10 max-h-24 overflow-y-scroll scrollbar-none">
           {comments.map((comment) => (
-            <div className="flex items-center space-x-2 mb-2">
-              <img className="h-7 rounded-full object-cover" src={comment.data().userImage} alt="userImage" />
+            <div key={comment.data().username} className="flex items-center space-x-2 mb-2">
+              <img
+                className="h-7 rounded-full object-cover"
+                src={comment.data().userImage}
+                alt="userImage"
+              />
               <p className="font-semibold">{comment.data().username}</p>
               <p className="flex-1 truncate">{comment.data().comment}</p>
               <Moment fromNow>
