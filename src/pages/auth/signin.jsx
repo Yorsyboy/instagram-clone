@@ -82,6 +82,7 @@ export default function Signin() {
                 className="bg-gray-300 rounded-lg p-1"
                 href="https://github.com/Yorsyboy"
                 target="_blank"
+                rel="noreferrer"
               >
                 Toyosi Taiwo{" "}
               </a>
