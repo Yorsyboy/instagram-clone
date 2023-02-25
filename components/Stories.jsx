@@ -5,7 +5,7 @@ import Story from './Story';
 import { useRecoilState } from 'recoil';
 import { userState } from 'atom/userAtom';
 
-export default function  () {
+export default function Stories  () {
     const [currentUser] = useRecoilState(userState);
     const [storyUser, setStoryUser] = useState([]);
 
