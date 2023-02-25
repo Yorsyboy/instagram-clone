@@ -4,7 +4,6 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   GithubAuthProvider,
-  signInWithRedirect,
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../../../firebase";
