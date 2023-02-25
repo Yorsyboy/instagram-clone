@@ -1,6 +1,36 @@
-import { getProviders, signIn } from "next-auth/react";
 import Header from "components/Header";
-export default function signin({ providers }) {
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "../../../firebase";
+import { useRouter } from "next/router";
+
+
+export default function Signin() {
+  const router = useRouter();
+  const onGoogleSignIn = async () => {
+    try {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      const user = auth.currentUser.providerData[0];
+      //save user in database
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          name: user.displayName,
+          email: user.email,
+          userImg: user.photoURL,
+          uid: user.uid,
+          timeStamp: serverTimestamp(),
+          username: user.displayName.split(" ").join("").toLocaleLowerCase(),
+        })
+      }
+      router.push("/");
+    } catch (error) {
+      console.log(error)
+    }
+  };
   return (
     <>
       <Header />
@@ -30,27 +60,17 @@ export default function signin({ providers }) {
             </p>
           </div>
           <div className="flex flex-wrap">
-            {Object.values(providers).map((provider) => (
-              <div key={provider.name} className="">
+              <div className="">
                 <button
                   className="bg-black inline-block m-1 px-6 py-2.5 mb-2 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out"
-                  onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+                  onClick={onGoogleSignIn}
                 >
-                  Sign in with {provider.name}
+                  Sign in with Google
                 </button>
               </div>
-            ))}
           </div>
         </div>
       </div>
     </>
   );
-}
-
-//server side rendering
-export async function getServerSideProps(context) {
-  const providers = await getProviders();
-  return {
-    props: { providers },
-  };
 }

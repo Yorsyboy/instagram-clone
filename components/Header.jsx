@@ -2,15 +2,47 @@ import Image from "next/image";
 import { CiSearch } from "react-icons/ci";
 import { AiFillHome } from "react-icons/ai";
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 import { modalState } from "../atom/modalAtom";
+import { useEffect } from "react";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { userState } from "atom/userAtom";
 
 export default function Header() {
-  const { data: session } = useSession();
   const router = useRouter();
   const [open, setOpen] = useRecoilState(modalState);
+  const [currentUser, setCurrentUser] = useRecoilState(userState);
+  const auth = getAuth();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const fetchUser = async () => {
+          const docRef = doc(
+            db,
+            "users",
+            user.auth.currentUser.providerData[0].uid
+          );
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setCurrentUser(docSnap.data());
+          }
+        };
+        fetchUser();
+      } else {
+        console.log("user is signed out");
+      }
+    });
+  }, []);
+
+  const OnSignOut = () => {
+    signOut(auth);
+    setCurrentUser(null);
+  };
+
   return (
     <div className="shadow-sm border-b sticky top-0 bg-white z-30">
       <div className="flex items-center justify-between max-w-6xl mx-4 xl:mx-auto">
@@ -57,15 +89,15 @@ export default function Header() {
               onClick={() => router.push("/")}
               className="hidden md:inline-flex text-xl cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
             />
-            {session ? (
+            {currentUser ? (
               <>
                 <AiOutlinePlusCircle
                   onClick={() => setOpen(true)}
                   className="text-xl cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
                 />
                 <Image
-                  onClick={signOut}
-                  src={session.user.image}
+                  onClick={OnSignOut}
+                  src={currentUser?.userImg}
                   width={40}
                   height={10}
                   className="rounded-full cursor-pointer"
@@ -74,7 +106,7 @@ export default function Header() {
               </>
             ) : (
               <button
-                onClick={signIn}
+                onClick={() => router.push("/auth/signin")}
                 className="bg-blue-500 text-white font-semibold px-4 py-2 rounded-md"
               >
                 Login
