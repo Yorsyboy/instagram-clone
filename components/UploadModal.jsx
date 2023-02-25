@@ -11,14 +11,14 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db, storage } from "../firebase";
-import { useSession } from "next-auth/react";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { userState } from "atom/userAtom";
 
 export default function UploadModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
+  const [currentUser] = useRecoilState(userState);
 
   //function to read the image
   const addImageToPost = (e) => {
@@ -39,8 +39,8 @@ export default function UploadModal() {
 
     const docRef = await addDoc(collection(db, "posts"), {
       caption: captionRef.current.value,
-      username: session.user.username,
-      profilePic: session.user.image,
+      username: currentUser?.username,
+      profilePic: currentUser?.userImg,
       timestamp: serverTimestamp(),
     });
 
