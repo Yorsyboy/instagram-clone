@@ -40,7 +40,7 @@ export default function Signin() {
   const onGithubSignIn = async () => {
     try {
       const provider = new GithubAuthProvider();
-      signInWithPopup(auth, provider);
+      await signInWithPopup(auth, provider);
       const user = auth.currentUser.providerData[0];
       //save user in database
       const docRef = doc(db, "users", user.uid);
@@ -102,7 +102,7 @@ export default function Signin() {
               onClick={onGithubSignIn}
             >
               <svg
-                class="w-4 h-4 mr-2 -ml-1"
+                className="w-4 h-4 mr-2 -ml-1"
                 aria-hidden="true"
                 focusable="false"
                 data-prefix="fab"
