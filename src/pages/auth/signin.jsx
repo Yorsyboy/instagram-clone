@@ -89,7 +89,7 @@ export default function Signin() {
               for learning purpose
             </p>
           </div>
-          <div className="">
+          <div className="flex ">
             <button
               className="text-white bg-red-400 hover:bg-red-500 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#1da1f2]/55 mr-2 mb-2"
               onClick={onGoogleSignIn}
