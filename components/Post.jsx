@@ -5,7 +5,6 @@ import { BsBookmark } from "react-icons/bs";
 import { FaRegComment } from "react-icons/fa";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 import Moment from "react-moment";
-import { useSession } from "next-auth/react";
 import {
   addDoc,
   collection,
@@ -18,13 +17,15 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { useRecoilState } from "recoil";
+import { userState } from "atom/userAtom";
 
 export default function Post({ id, username, userImg, img, caption }) {
-  const { data: session } = useSession();
   const [comment, setComment] = useState(" ");
   const [comments, setComments] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
   const [likes, setLikes] = useState([]);
+  const [currentUser] = useRecoilState(userState);
 
   useEffect(() => {
     // fetch the comments from the database
@@ -45,8 +46,8 @@ export default function Post({ id, username, userImg, img, caption }) {
     // add the comment to the database
     await addDoc(collection(db, "posts", id, "comments"), {
       comment: commentToSend,
-      username: session.user.username,
-      userImage: session.user.image,
+      username: currentUser?.username,
+      userImage: currentUser?.userImg,
       timestamp: serverTimestamp(),
     });
   };
@@ -54,11 +55,11 @@ export default function Post({ id, username, userImg, img, caption }) {
   const likePost = async () => {
     // add the like to the database
     if (hasLiked) {
-      await deleteDoc(doc(db, "posts", id, "likes", session.user.username));
+      await deleteDoc(doc(db, "posts", id, "likes", currentUser?.uid));
       return;
     } else {
-      await setDoc(doc(db, "posts", id, "likes", session.user.username), {
-        username: session.user.username,
+      await setDoc(doc(db, "posts", id, "likes", currentUser?.uid), {
+        username: currentUser?.username,
       });
     }
   };
@@ -76,7 +77,7 @@ export default function Post({ id, username, userImg, img, caption }) {
   useEffect(() => {
     setHasLiked(
       // check if the user has liked the post
-      likes.findIndex((like) => like.id === session?.user?.username) !== -1
+      likes.findIndex((like) => like.id === currentUser?.uid) !== -1
     );
   }, [likes]);
 
@@ -100,7 +101,7 @@ export default function Post({ id, username, userImg, img, caption }) {
       <img className="w-full object-cover" src={img} alt="Post Image" />
 
       {/* Post buttons */}
-      {session && (
+      {currentUser && (
         <div className="flex justify-between px-4 pt-4">
           <div className="flex space-x-4">
             {hasLiked ? (
@@ -145,7 +146,7 @@ export default function Post({ id, username, userImg, img, caption }) {
       )}
 
       {/* Post comments Input */}
-      {session && (
+      {currentUser && (
         <form className="flex items-center p-4">
           <HiOutlineEmojiHappy className="" />
           <input
