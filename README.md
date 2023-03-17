@@ -1,7 +1,7 @@
 
 ![](https://img.shields.io/badge/Microverse-blueviolet)
 
-# IMDb-clone
+# Instagram-clone
 
 > Instagram clone is a social media platform that replicates the features and functionalities of Instagram, allowing users to share photos and videos, and interact through comments and likes.
 
