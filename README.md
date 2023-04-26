@@ -1,5 +1,4 @@
 
-![](https://img.shields.io/badge/Microverse-blueviolet)
 
 # Instagram-clone
 
